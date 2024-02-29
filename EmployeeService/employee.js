@@ -125,22 +125,50 @@ const getemployeebyGSI=async()=>{
 }
 
 
-const updateemployee = async (pk, sk, value) => {
-  const updateExpression = "SET EMPLOYEE_EMAIL_ID = :value1";
-  const expressionAttributeValues = {
-    ":value1": value,
-  };
+const updateemployee = async (pk, sk,value,fieldToUpdate) => {
+
+  //It is a practice to update details from Url 
+  // http://localhost:3000/api/v1/employee/updateemployee?EMPLOYEE_ID=123&EMPLOYEE_NAME=John&CHANGE_EMAIL_ID=newemail@example.com
+
+  // const updateExpression = "SET EMPLOYEE_EMAIL_ID = :value1";
+  // const expressionAttributeValues = {
+  //   ":value1": value,
+  // };
+  // const params = {
+  //   TableName: TABLE_NAME,
+  //   Key: {
+  //     EMPLOYEE_ID: pk,
+  //     EMPLOYEE_NAME: sk,
+  //   },
+  //   UpdateExpression: updateExpression,
+  //   ExpressionAttributeValues: expressionAttributeValues,
+  //   ReturnValues: "ALL_NEW",
+  // };
+  // console.log("PK",pk);
+  // console.log("SK",sk);
+  // console.log("Value",value);
   const params = {
     TableName: TABLE_NAME,
     Key: {
-      EMPLOYEE_ID: pk,
-      EMPLOYEE_NAME: sk,
+        'EMPLOYEE_ID': pk,      
+        'EMPLOYEE_NAME': sk    
     },
-    UpdateExpression: updateExpression,
-    ExpressionAttributeValues: expressionAttributeValues,
-    ReturnValues: "ALL_NEW",
-  };
-  return await DocumentClient.update(params).promise();
+    UpdateExpression: 'SET #field = :newField', // Update the Salary attribute
+    ExpressionAttributeNames: {
+        '#field': fieldToUpdate   // Attribute to update
+    },
+    ExpressionAttributeValues: {
+        ':newField': value  // New value for updation
+    }
+};
+try {
+  const updatedItem = await DocumentClient.update(params).promise();
+  console.log("Updated Item", updatedItem);
+  return updatedItem; // Return the updated item
+} catch (error) {
+  console.error('Error updating item:', error);
+  throw error; // Throw the error to handle it in the controller function
+}
 };
   
 // const addemployeeFunc = async (itemObject) => {
@@ -189,6 +217,8 @@ const addemployeeFunc = async (itemObject) => {
   };
   return await DocumentClient.put(params).promise();
 };
+
+
 const deleteemployee = async (eid, ename) => {
   const params = {
     TableName: TABLE_NAME,
