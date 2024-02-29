@@ -166,21 +166,6 @@ const deleteemployee = async (eid, ename) => {
   return await DocumentClient.delete(params).promise();
 };
 
-// const deleteTable= async ()={
-//   var params3 = {
-//     TableName: TABLE_NAME,
-//   },
-//   DocumentClient.deleteTable(params3, function (err, data) {
-//     if (err && err.code === "ResourceNotFoundException") {
-//       console.log("Error: Table not found");
-//     } else if (err && err.code === "ResourceInUseException") {
-//       console.log("Error: Table in use");
-//     } else {
-//       console.log("Success", data);
-//     }
-//   }),
-// };
-
 
 const deleteTable = async () => {
   const params = {
