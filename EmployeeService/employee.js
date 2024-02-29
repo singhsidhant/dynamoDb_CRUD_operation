@@ -6,8 +6,8 @@ AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 });
-const DocumentClient = new AWS.DynamoDB.DocumentClient();
-const dynamodb = new AWS.DynamoDB();
+const DocumentClient = new AWS.DynamoDB.DocumentClient();//higher level abstraction
+const dynamodb = new AWS.DynamoDB();//low level abstraction
 // let ddb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
 const TABLE_NAME = process.env.tableName;
 
@@ -91,6 +91,39 @@ const getemployeebyId = async (eid, ename) => {
   };
   return await DocumentClient.get(params).promise();
 };
+
+const getemployeebyGSI=async()=>{
+  const table = TABLE_NAME;
+  const params = {
+      TableName : table,
+      IndexName : 'DEPARTMENT_NAME',
+      KeyConditionExpression : 'department = :departmentVal', 
+      FilterExpression: 'age > :ageVal',
+      ExpressionAttributeValues : {
+          ':departmentVal' : 'EL' ,
+          ':ageVal': 30
+      }
+  };
+  try {
+    const data = await new Promise((resolve, reject) => {
+      DocumentClient.query(params, (err, data) => {
+        if (err) {
+          console.error("Unable to read item. Error JSON:", JSON.stringify(err, null, 2));
+          reject(err);
+        } else {
+          console.log("GetItem succeeded:", JSON.stringify(data, null, 2));
+          resolve(data.Items);
+        }
+      });
+    });
+
+    return data;
+  } catch (err) {
+    throw err;
+  }
+}
+
+
 const updateemployee = async (pk, sk, value) => {
   const updateExpression = "SET EMPLOYEE_EMAIL_ID = :value1";
   const expressionAttributeValues = {
@@ -196,4 +229,5 @@ module.exports = {
   checkIfEmployeeExists,
   addemployeeFunc,
   deleteTable,
+  getemployeebyGSI,
 };

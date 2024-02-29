@@ -5,7 +5,8 @@ const {
   getemployee,
   checkIfEmployeeExists,
   addemployeeFunc,
-  deleteTable
+  deleteTable,
+  getemployeebyGSI,
 } = require("../EmployeeService/employee");
 
 // const addEmployee = async (req, res) => {
@@ -97,6 +98,7 @@ const deletetable = async (req,res) => {
 const getEmployee = async (req, res) => {
   try {
     const employee = await getemployee();
+    console.log("getEmployee",employee)
     res.status(200).json(employee);
   } catch (err) {
     console.error(err);
@@ -105,6 +107,18 @@ const getEmployee = async (req, res) => {
 };
 
 
+const getEmployeebyGSI = async (req, res) => {
+  try {
+    const employee = await getemployeebyGSI();
+    // Log the retrieved employee data
+    console.log("Retrieved employee data:", employee);
+    // Send the retrieved employee data as a JSON response
+    res.status(200).json(employee);
+  } catch (err) {
+    console.error(err);
+    res.status(err.statusCode || 500).json("Something went wrong");
+  }
+};
 // const getEmployeebyId = async (req, res) => {
 //   const eid = parseInt(req.query.EMPLOYEE_ID);
 //   const ename = req.query.EMPLOYEE_NAME;
@@ -144,5 +158,5 @@ module.exports = {
   getEmployee,
   deletetable,
   getEmployeebyId,
-  
+  getEmployeebyGSI,
 };

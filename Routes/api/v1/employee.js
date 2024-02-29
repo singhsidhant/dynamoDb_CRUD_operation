@@ -6,5 +6,6 @@ router.delete("/deleteemployee", employee.deleteEmployee);
 router.delete("/deletetable", employee.deletetable);
 router.put("/updateemployee", employee.updateEmployee);
 router.get("/getemployee", employee.getEmployee);
+router.get("/getemployeeByGSI", employee.getEmployeebyGSI);
 router.get("/getemployeeById", employee.getEmployeebyId);
 module.exports = router;
