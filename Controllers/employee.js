@@ -55,19 +55,68 @@ const addEmployee = async (req, res) => {
 };
 
 const updateEmployee = async (req, res) => {
-  console.log(req.query);
-  const pk = parseInt(req.query.EMPLOYEE_ID);
-  const sk = req.query.EMPLOYEE_NAME;
-  const value = req.query.CHANGE_EMAIL_ID;
-
+  // console.log(req.query);
+  // const pk = parseInt(req.query.EMPLOYEE_ID);
+  // const sk = req.query.EMPLOYEE_NAME;
+  // const value = req.query.CHANGE_EMAIL_ID;
+  const pk = req.body.EMPLOYEE_ID;
+  const sk = req.body.EMPLOYEE_NAME;
+  const value = req.body.NEW_MAIL;
   try {
     const employee = await updateemployee(pk, sk, value);
-    res.status(200).json(employee);
+      console.log(" Employee", employee);
+    res.status(200).json("Sucessfully value is updated");
   } catch (err) {
     console.error(err);
     res.status(err.statusCode || 500).json("Something went wrong");
   }
 };
+
+const updateEmployeeByGSI = async (req, res) => {
+  try {
+    // Query the GSI to find items that match the given criteria
+    const employees = await getemployeebyGSI();
+    console.log("employees======>>",employees);
+    // Update the desired field in each retrieved item
+    // for (const employee of employees) {
+    //   // Extract the primary key attributes from the retrieved item
+    //   const { EMPLOYEE_ID, EMPLOYEE_NAME } = employee;
+    //   console.log("------",EMPLOYEE_ID,EMPLOYEE_NAME)
+      
+    //   // Perform the update operation on the original table using the primary key
+    //   const updatedItem = await updateemployee(EMPLOYEE_ID, EMPLOYEE_NAME, req.body.NEW_EMAIL);
+
+    //   // Log the updated item
+    //   console.log("Updated item:", updatedItem);
+    // }
+
+    // Update the department for items with department "EE"
+    for (const employee of employees) {
+      if (employee.department === "EL" && employee.Phone === "6383031999") {
+        // Extract the primary key attributes from the retrieved item
+        const { EMPLOYEE_ID, EMPLOYEE_NAME } = employee;
+        
+        // Perform the update operation on the original table using the primary key
+        const updatedItem = await updateemployee(EMPLOYEE_ID, EMPLOYEE_NAME, "CSE","department");
+
+        // Log the updated item
+        console.log("Updated item:", updatedItem);
+      }
+    }
+
+    // Send a success response
+    res.status(200).json("Successfully updated field(s) for matching items");
+  } catch (err) {
+    console.error(err);
+    res.status(err.statusCode || 500).json("Something went wrong");
+  }
+};
+
+module.exports = {
+  // Other controller functions...
+  updateEmployeeByGSI,
+};
+
 
 
 const deleteEmployee = async (req, res) => {
@@ -154,6 +203,7 @@ const getEmployeebyId = async (req, res) => {
 module.exports = {
   addEmployee,
   updateEmployee,
+  updateEmployeeByGSI,
   deleteEmployee,
   getEmployee,
   deletetable,

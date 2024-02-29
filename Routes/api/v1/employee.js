@@ -5,6 +5,7 @@ router.post("/addemployee", employee.addEmployee);
 router.delete("/deleteemployee", employee.deleteEmployee);
 router.delete("/deletetable", employee.deletetable);
 router.put("/updateemployee", employee.updateEmployee);
+router.put("/updateemployeebyGSI", employee.updateEmployeeByGSI);
 router.get("/getemployee", employee.getEmployee);
 router.get("/getemployeeByGSI", employee.getEmployeebyGSI);
 router.get("/getemployeeById", employee.getEmployeebyId);
