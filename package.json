@@ -1,0 +1,21 @@
+{
+  "name": "dynamorest",
+  "version": "1.0.0",
+  "description": "dynamo rest api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "author": "Sidhant",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.521.0",
+    "@aws-sdk/lib-dynamodb": "^3.521.0",
+    "aws-sdk": "^2.1511.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "nodemon": "^3.0.2"
+  }
+}
