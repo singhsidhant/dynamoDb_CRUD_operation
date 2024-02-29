@@ -99,6 +99,7 @@ const getemployeebyGSI=async()=>{
       IndexName : 'DEPARTMENT_NAME',
       KeyConditionExpression : 'department = :departmentVal', 
       FilterExpression: 'age > :ageVal',
+      ScanIndexForward: true,//true = ascending, false = descending 
       ExpressionAttributeValues : {
           ':departmentVal' : 'EL' ,
           ':ageVal': 30
