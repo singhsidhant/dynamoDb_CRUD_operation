@@ -16,99 +16,56 @@ const params2 = {
   TableName: "Employee",
 };
 const CreateEmployeeTable = () => {
-  // const params = {
-  //   AttributeDefinitions: [
-  //     {
-  //       AttributeName: "EMPLOYEE_ID",
-  //       AttributeType: "N",
-  //     },
-  //     {
-  //       AttributeName: "EMPLOYEE_NAME",
-  //       AttributeType: "S",
-  //     },
-  //   ],
-  //   KeySchema: [
-  //     {
-  //       AttributeName: "EMPLOYEE_ID",
-  //       KeyType: "HASH",
-  //     },
-  //     {
-  //       AttributeName: "EMPLOYEE_NAME",
-  //       KeyType: "RANGE",
-  //     },
-  //   ],
-  //   ProvisionedThroughput: {
-  //     ReadCapacityUnits: 1,
-  //     WriteCapacityUnits: 1,
-  //   },
-  //   TableName: tableName,
-  //   StreamSpecification: {
-  //     StreamEnabled: false,
-  //   },
-  // };
-
-  // params define
   const params = {
-    TableName: tableName,
-    KeySchema: [
-      // The type of of schema.  Must start with a HASH type, with an optional second RANGE.
-      {
-        // Required HASH type attribute
-        AttributeName: "EMPLOYEE_ID",
-        KeyType: "HASH",
-      },
-      {
-        // Required HASH type attribute
-        AttributeName: "EMPLOYEE_NAME",
-        KeyType: "RANGE",
-      },
-    ],
+    TableName: tableName, // Replace 'YourTableName' with your actual table name
     AttributeDefinitions: [
-      // The names and types of all primary and index key attributes only
-      {
-        AttributeName: "EMPLOYEE_ID",
-        AttributeType: "N", // (S | N | B) for string, number, binary
-      },
-      {
-        AttributeName: "EMPLOYEE_NAME",
-        AttributeType: "S", // (S | N | B) for string, number, binary
-      },
-      {
-        AttributeName: "Phone",
-        AttributeType: "S", // (S | N | B) for string, number, binary
-      },
+      // Include definitions for all primary and index key attributes
+      { AttributeName: "EMPLOYEE_ID", AttributeType: "N" },
+      { AttributeName: "EMPLOYEE_NAME", AttributeType: "S" },
+      { AttributeName: "Phone", AttributeType: "S" },
+      { AttributeName: "department", AttributeType: "S" }, // New attribute definition
     ],
-    ProvisionedThroughput: {
-      // required provisioned throughput for the table
-      ReadCapacityUnits: 400,
-      WriteCapacityUnits: 400,
-    },
-    GlobalSecondaryIndexes: [
-      // optional (list of GlobalSecondaryIndex)
+    GlobalSecondaryIndexUpdates: [
+      // Include updates for existing GSIs
       {
-        IndexName: "PHONE_NO",
-        KeySchema: [
-          {
-            // Required HASH type attribute
-            AttributeName: "Phone",
-            KeyType: "HASH",
+        // Update for existing GSI for 'Phone' attribute
+        Update: {
+          IndexName: "PHONE_NO",
+          ProvisionedThroughput: {
+            ReadCapacityUnits: 400,
+            WriteCapacityUnits: 400,
           },
-        ],
-        Projection: {
-          // attributes to project into the index
-          ProjectionType: "ALL", // (ALL | KEYS_ONLY | INCLUDE)
-        },
-        ProvisionedThroughput: {
-          // throughput to provision to the index
-          ReadCapacityUnits: 400,
-          WriteCapacityUnits: 400,
         },
       },
-      // ... more global secondary indexes ...
+      {
+        // Update for new GSI for 'department' attribute
+        Create: {
+          IndexName: "DEPARTMENT_GSI",
+          KeySchema: [{ AttributeName: "department", KeyType: "HASH" }],
+          Projection: {
+            ProjectionType: "ALL",
+          },
+          ProvisionedThroughput: {
+            ReadCapacityUnits: 400,
+            WriteCapacityUnits: 400,
+          },
+        },
+      },
     ],
   };
 
+  //Run this script if you want to update the table
+
+  // ddb.updateTable(params, (err, data) => {
+  //     if (err) {
+  //         console.error('Unable to update table:', err);
+  //     } else {
+  //         console.log('Table updated successfully:', data);
+  //     }
+  // });
+
   // describe table if pre existed
+
   ddb.describeTable(params2, (err, data) => {
     if (err && err.code === "ResourceNotFoundException") {
       //create table if the table is not created
@@ -125,6 +82,26 @@ const CreateEmployeeTable = () => {
     } else {
       console.log("Table exists. Table description:", data);
     }
+  });
+
+  //Run this if you want to check which one is GSI indexes
+  ddb.describeTable(params2, (err, data) => {
+      if (err) {
+          console.log("if part")
+          console.error('Unable to describe table:', err);
+      } else {
+          console.log("Else part start")
+          const gsiList = data.Table.GlobalSecondaryIndexes;
+          console.log("Else part start")
+          if (gsiList && gsiList.length > 0) {
+              console.log('Global Secondary Indexes on the table:');
+              gsiList.forEach((gsi, index) => {
+                  console.log(`Index ${index + 1}: ${gsi.IndexName}`);
+              });
+          } else {
+              console.log('No Global Secondary Indexes found on the table.');
+          }
+      }
   });
 };
 module.exports = CreateEmployeeTable;
