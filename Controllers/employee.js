@@ -6,7 +6,7 @@ const {
   checkIfEmployeeExists,
   addemployeeFunc,
   deleteTable,
-  getemployeebyGSI,
+  getemployeeby_phone,
 } = require("../EmployeeService/employee");
 
 // const addEmployee = async (req, res) => {
@@ -63,7 +63,7 @@ const updateEmployee = async (req, res) => {
   const sk = req.body.EMPLOYEE_NAME;
   const value = req.body.NEW_MAIL;
   try {
-    const employee = await updateemployee(pk, sk, value);
+    const employee = await updateemployee(pk, sk, value,"email");
       console.log(" Employee", employee);
     res.status(200).json("Sucessfully value is updated");
   } catch (err) {
@@ -72,10 +72,11 @@ const updateEmployee = async (req, res) => {
   }
 };
 
-const updateEmployeeByGSI = async (req, res) => {
+const updateEmployeeByphone = async (req, res) => {
+  const phoneVal=req.body.Phone;
   try {
     // Query the GSI to find items that match the given criteria
-    const employees = await getemployeebyGSI();
+    const employees = await getemployeeby_phone(phoneVal);
     console.log("employees======>>",employees);
     // Update the desired field in each retrieved item
     // for (const employee of employees) {
@@ -92,12 +93,12 @@ const updateEmployeeByGSI = async (req, res) => {
 
     // Update the department for items with department "EE"
     for (const employee of employees) {
-      if (employee.department === "EL" && employee.Phone === "6383031999") {
+      if (employee.department === "CSE" && employee.Phone === phoneVal) {
         // Extract the primary key attributes from the retrieved item
         const { EMPLOYEE_ID, EMPLOYEE_NAME } = employee;
         
         // Perform the update operation on the original table using the primary key
-        const updatedItem = await updateemployee(EMPLOYEE_ID, EMPLOYEE_NAME, "CSE","department");
+        const updatedItem = await updateemployee(EMPLOYEE_ID, EMPLOYEE_NAME, "EL","department");
 
         // Log the updated item
         console.log("Updated item:", updatedItem);
@@ -112,19 +113,18 @@ const updateEmployeeByGSI = async (req, res) => {
   }
 };
 
-module.exports = {
-  // Other controller functions...
-  updateEmployeeByGSI,
-};
+// module.exports = {
+//   // Other controller functions...
+//   updateEmployeeByGSI,
+// };
 
 
 
 const deleteEmployee = async (req, res) => {
+  const pk = req.body.EMPLOYEE_ID;
+  const sk = req.body.EMPLOYEE_NAME;
   try {
-    const eid = parseInt(req.query.EMPLOYEE_ID);
-    const ename = req.query.EMPLOYEE_NAME;
-
-    const deleteEmployee = await deleteemployee(eid, ename);
+    const deleteEmployee = await deleteemployee(pk,sk);
     console.log("deleteEmployee", deleteEmployee);
     return res.status(200).json("deleteEmployee  successful");
   } catch (err) {
@@ -156,9 +156,10 @@ const getEmployee = async (req, res) => {
 };
 
 
-const getEmployeebyGSI = async (req, res) => {
+const getEmployeebyphone = async (req, res) => {
+  const phoneVal=req.body.Phone;
   try {
-    const employee = await getemployeebyGSI();
+    const employee = await getemployeeby_phone(phoneVal);
     // Log the retrieved employee data
     console.log("Retrieved employee data:", employee);
     // Send the retrieved employee data as a JSON response
@@ -182,31 +183,31 @@ const getEmployeebyGSI = async (req, res) => {
 
 
 const getEmployeebyId = async (req, res) => {
-  const eid = parseInt(req.query.EMPLOYEE_ID);
-  const ename = req.query.EMPLOYEE_NAME;
+  const pk = req.body.EMPLOYEE_ID;
+  const sk = req.body.EMPLOYEE_NAME;
   
   // Check if eid is a valid integer
-  if (isNaN(eid)) {
+  if (isNaN(pk)) {
     return res.status(400).json("EMPLOYEE_ID must be a valid integer");
   }
   
   try {
-    const employee = await getemployeebyId(eid, ename);
+    const employee = await getemployeebyId(pk, sk);
     res.status(200).json(employee);
   } catch (err) {
     console.error(err);
     res.status(err.statusCode || 500).json("Something went wrong");
-  }
+  } 
 };
 
 
 module.exports = {
   addEmployee,
   updateEmployee,
-  updateEmployeeByGSI,
+  updateEmployeeByphone,  
   deleteEmployee,
   getEmployee,
   deletetable,
   getEmployeebyId,
-  getEmployeebyGSI,
+  getEmployeebyphone,
 };

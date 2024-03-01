@@ -92,17 +92,17 @@ const getemployeebyId = async (eid, ename) => {
   return await DocumentClient.get(params).promise();
 };
 
-const getemployeebyGSI=async()=>{
+const getemployeeby_phone=async(Phonevalue)=>{
   const table = TABLE_NAME;
   const params = {
       TableName : table,
-      IndexName : 'DEPARTMENT_NAME',
-      KeyConditionExpression : 'department = :departmentVal', 
+      IndexName : 'PHONE_NO',
+      KeyConditionExpression : 'Phone = :phoneno', 
       FilterExpression: 'age > :ageVal',
       ScanIndexForward: true,//true = ascending, false = descending 
       ExpressionAttributeValues : {
-          ':departmentVal' : 'EL' ,
-          ':ageVal': 30
+          ':phoneno' : Phonevalue ,
+          ':ageVal': 5
       }
   };
   try {
@@ -260,5 +260,5 @@ module.exports = {
   checkIfEmployeeExists,
   addemployeeFunc,
   deleteTable,
-  getemployeebyGSI,
+  getemployeeby_phone,
 };

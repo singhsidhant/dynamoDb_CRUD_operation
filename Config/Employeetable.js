@@ -50,57 +50,63 @@ const CreateEmployeeTable = () => {
   // params define
   const params = {
     TableName: tableName,
-    KeySchema: [ // The type of of schema.  Must start with a HASH type, with an optional second RANGE.
-        { // Required HASH type attribute
-            AttributeName: 'EMPLOYEE_ID',
-            KeyType: 'HASH',
-        },
-        { // Required HASH type attribute
-            AttributeName: 'EMPLOYEE_NAME',
-            KeyType: 'RANGE',
-        }            
-
+    KeySchema: [
+      // The type of of schema.  Must start with a HASH type, with an optional second RANGE.
+      {
+        // Required HASH type attribute
+        AttributeName: "EMPLOYEE_ID",
+        KeyType: "HASH",
+      },
+      {
+        // Required HASH type attribute
+        AttributeName: "EMPLOYEE_NAME",
+        KeyType: "RANGE",
+      },
     ],
-    AttributeDefinitions: [ // The names and types of all primary and index key attributes only
-        {
-            AttributeName: 'EMPLOYEE_ID',
-            AttributeType: 'N', // (S | N | B) for string, number, binary
-        },
-        {
-            AttributeName: 'EMPLOYEE_NAME',
-            AttributeType: 'S', // (S | N | B) for string, number, binary
-        },
-        {
-            AttributeName: 'department',
-            AttributeType: 'S', // (S | N | B) for string, number, binary
-        },
-
+    AttributeDefinitions: [
+      // The names and types of all primary and index key attributes only
+      {
+        AttributeName: "EMPLOYEE_ID",
+        AttributeType: "N", // (S | N | B) for string, number, binary
+      },
+      {
+        AttributeName: "EMPLOYEE_NAME",
+        AttributeType: "S", // (S | N | B) for string, number, binary
+      },
+      {
+        AttributeName: "Phone",
+        AttributeType: "S", // (S | N | B) for string, number, binary
+      },
     ],
-    ProvisionedThroughput: { // required provisioned throughput for the table
-        ReadCapacityUnits: 400, 
-        WriteCapacityUnits: 400, 
+    ProvisionedThroughput: {
+      // required provisioned throughput for the table
+      ReadCapacityUnits: 400,
+      WriteCapacityUnits: 400,
     },
-    GlobalSecondaryIndexes: [ // optional (list of GlobalSecondaryIndex)
-        { 
-            IndexName: 'DEPARTMENT_NAME', 
-            KeySchema: [
-                { // Required HASH type attribute
-                    AttributeName: 'department',
-                    KeyType: 'HASH',
-                }
-            ],
-            Projection: { // attributes to project into the index
-                ProjectionType: 'ALL' // (ALL | KEYS_ONLY | INCLUDE)
-            },
-            ProvisionedThroughput: { // throughput to provision to the index
-                ReadCapacityUnits: 400,
-                WriteCapacityUnits: 400,
-            },
+    GlobalSecondaryIndexes: [
+      // optional (list of GlobalSecondaryIndex)
+      {
+        IndexName: "PHONE_NO",
+        KeySchema: [
+          {
+            // Required HASH type attribute
+            AttributeName: "Phone",
+            KeyType: "HASH",
+          },
+        ],
+        Projection: {
+          // attributes to project into the index
+          ProjectionType: "ALL", // (ALL | KEYS_ONLY | INCLUDE)
         },
-        // ... more global secondary indexes ...
+        ProvisionedThroughput: {
+          // throughput to provision to the index
+          ReadCapacityUnits: 400,
+          WriteCapacityUnits: 400,
+        },
+      },
+      // ... more global secondary indexes ...
     ],
-
-};
+  };
 
   // describe table if pre existed
   ddb.describeTable(params2, (err, data) => {
